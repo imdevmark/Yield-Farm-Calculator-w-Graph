@@ -35,17 +35,42 @@ export const calculateYields = (inputs: YieldInputs): YieldResults => {
   };
 };
 
-export const generateChartData = (investment: number, dpr: number): ChartData[] => {
-  const months = [
-    'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
-    'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
-  ];
+export const generateChartData = (investment: number, dpr: number, viewType: 'daily' | 'weekly' | 'monthly' = 'daily'): ChartData[] => {
+  let dataPoints: number[];
+  let labels: string[];
 
-  return months.map((month, index) => {
-    const days = (index + 1) * 30;
+  switch (viewType) {
+    case 'daily':
+      dataPoints = [1, 3, 6, 9];
+      labels = dataPoints.map(day => `Day ${day}`);
+      break;
+    case 'weekly':
+      dataPoints = [1, 2, 3, 4];
+      labels = dataPoints.map(week => `Week ${week}`);
+      break;
+    case 'monthly':
+      dataPoints = [1, 3, 6, 9, 12];
+      labels = dataPoints.map(month => `Month ${month}`);
+      break;
+  }
+
+  return labels.map((label, index) => {
+    let days: number;
+    switch (viewType) {
+      case 'daily':
+        days = dataPoints[index];
+        break;
+      case 'weekly':
+        days = dataPoints[index] * 7;
+        break;
+      case 'monthly':
+        days = dataPoints[index] * 30;
+        break;
+    }
+
     const yield_ = investment * (Math.pow(1 + (dpr / 100), days) - 1);
     return {
-      month,
+      month: label,
       yield: parseFloat(yield_.toFixed(2))
     };
   });

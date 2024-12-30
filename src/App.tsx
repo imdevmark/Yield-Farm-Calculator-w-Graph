@@ -29,45 +29,80 @@ function App() {
   });
 
   const [chartData, setChartData] = useState<ChartData[]>([]);
+  const [showChart, setShowChart] = useState<boolean>(false);
+  const [error, setError] = useState<string | null>(null);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setInputs(prev => ({
       ...prev,
       [e.target.name]: e.target.value
     }));
+    setError(null);
   };
 
   const handleCalculate = () => {
+    const { investment, dpr, wpr, tvl, weeklyRewards } = inputs;
+    
+    if (!investment || !dpr || !wpr || !tvl || !weeklyRewards) {
+      setError('Please fill in all fields');
+      return;
+    }
+
+    const investmentNum = parseFloat(investment);
+    const dprNum = parseFloat(dpr);
+    const wprNum = parseFloat(wpr);
+    const tvlNum = parseFloat(tvl);
+    const weeklyRewardsNum = parseFloat(weeklyRewards);
+
+    if (isNaN(investmentNum) || isNaN(dprNum) || isNaN(wprNum) || 
+        isNaN(tvlNum) || isNaN(weeklyRewardsNum)) {
+      setError('Please enter valid numbers');
+      return;
+    }
+
     const newResults = calculateYields(inputs);
     setResults(newResults);
     
-    // Generate chart data
-    const investment = parseFloat(inputs.investment);
-    const dpr = parseFloat(inputs.dpr);
-    if (!isNaN(investment) && !isNaN(dpr)) {
-      setChartData(generateChartData(investment, dpr));
-    }
+    const generatedChartData = generateChartData(investmentNum, dprNum);
+    setChartData(generatedChartData);
+    setShowChart(true);  // Show the chart after calculation
+    
+    setError(null);
   };
 
   return (
-    <div className="min-h-screen bg-black w-full">
-      <div className="max-w-7xl mx-auto p-4 md:p-8">
-        <div className="flex items-center justify-center gap-4 mb-12">
-          <Calculator className="w-12 h-12 text-[#00ff00]" />
-          <h1 className="text-4xl md:text-6xl font-bold font-mono tracking-tight bg-gradient-to-r from-[#00ff00] via-[#ff00ff] to-[#00ffff] text-transparent bg-clip-text">
-            YIELD FARM CALCULATOR
-          </h1>
+    <div className="min-h-screen bg-black text-white flex flex-col items-center justify-center p-4">
+      <div className="w-full max-w-4xl">
+        <div className="flex items-center justify-center mb-8">
+          <Calculator className="mr-4 text-cyan-500" size={48} />
+          <h1 className="text-4xl font-bold text-cyan-500">Yield Farm Calculator</h1>
         </div>
+
+        {error && (
+          <div className="bg-red-500 text-white p-4 rounded-lg mb-4 text-center">
+            {error}
+          </div>
+        )}
 
         <div className="grid md:grid-cols-2 gap-8">
           <YieldInputForm 
-            inputs={inputs}
-            onInputChange={handleInputChange}
-            onCalculate={handleCalculate}
+            inputs={inputs} 
+            onInputChange={handleInputChange} 
+            onCalculate={handleCalculate} 
           />
-          <YieldResults results={results} />
-          <YieldChart data={chartData} />
+          <div>
+            <YieldResults results={results} />
+          </div>
         </div>
+
+        {/* Separate section for chart */}
+        {showChart && (
+          <YieldChart 
+            investment={parseFloat(inputs.investment)} 
+            dpr={parseFloat(inputs.dpr)} 
+            showChart={showChart} 
+          />
+        )}
       </div>
     </div>
   );

@@ -21,8 +21,8 @@ export function YieldLineChart({ data }: YieldLineChartProps) {
         data={data}
         margin={{
           top: 20,
-          right: 30,
-          left: 20,
+          right: 40,
+          left: 40,
           bottom: 20,
         }}
       >
@@ -39,7 +39,8 @@ export function YieldLineChart({ data }: YieldLineChartProps) {
           tick={{ fill: '#00ffff' }}
           tickFormatter={(value) => `$${value.toLocaleString()}`}
           axisLine={{ strokeWidth: 2 }}
-          width={80}
+          width={100}
+          domain={['auto', 'dataMax + 1000']} // Ensures all data points are visible with padding
         />
         <Tooltip content={<CustomTooltip />} />
         <Line

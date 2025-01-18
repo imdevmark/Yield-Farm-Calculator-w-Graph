@@ -40,7 +40,7 @@ export function YieldLineChart({ data }: YieldLineChartProps) {
           tickFormatter={(value) => `$${value.toLocaleString()}`}
           axisLine={{ strokeWidth: 2 }}
           width={100}
-          domain={['auto', 'dataMax + 1000']} // Ensures all data points are visible with padding
+          domain={[0, 'dataMax * 1.2']} // Ensures all data points are visible with padding
         />
         <Tooltip content={<CustomTooltip />} />
         <Line

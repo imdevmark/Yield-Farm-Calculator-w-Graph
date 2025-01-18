@@ -37,7 +37,7 @@ export function YieldResults({ results }: YieldResultsProps) {
               <Label className="text-sm" style={{ color: item.color }}>
                 {item.label}
               </Label>
-              <p className="text-3xl font-mono" style={{ color: item.color }}>
+              <p className="text-3xl font-mono overflow-hidden text-ellipsis" style={{ color: item.color }}>
                 {formatCurrency(results[item.key as keyof YieldResultsType])}
               </p>
               {index < RESULT_ITEMS.length - 1 && (
